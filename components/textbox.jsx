@@ -1,22 +1,34 @@
 import React, { useState } from "react";
 import Image from "next/image";
-const TextBox = ({ lable, action, type, placeholder }) => {
+import ErrorHandler from "./error";
+
+// INPUT BOX
+// lable - the name to display
+// action - fucntion to be fired onChange event
+// error - error messages to be shown if the field is empty or any other validation error
+const TextBox = ({ lable, action, type, placeholder, error }) => {
   return (
     <>
       <main>
         <div className="flex flex-col gap-1">
           <div className="text-sm font-bold text-gray-600">{lable}</div>
           <input
-            className="outline-none p-2 text-gray-800 bg-gray-100 rounded"
-            type={"text"}
+            required
+            className="outline-none p-2 text-base text-gray-600 bg-gray-100 rounded"
+            type={type || "text"}
+            onChange={action}
             placeholder={placeholder}
           />
+          {error && <ErrorHandler error={error} />}
         </div>
       </main>
     </>
   );
 };
 
+// Custom select box
+// list - contains all possible options
+// multiselect - boolean value, if true you can select multiple items
 export const SelectBox = ({
   list,
   lable,
@@ -31,6 +43,7 @@ export const SelectBox = ({
   const handleSelect = (e) => {
     if (!multiSelect) {
       setValue(e.target.textContent);
+      action(e.target.textContent);
     } else {
       setArr([...arr, e.target.textContent]);
       action([...arr, e.target.textContent]);
@@ -43,10 +56,12 @@ export const SelectBox = ({
         <div className="text-gray-600 text-sm font-bold">{lable}</div>
         <div className="flex relative w-full flex-col gap-2">
           <div
-            onClick={() => setShow(true)}
+            onClick={() => setShow(!show)}
             className="flex  bg-gray-100  justify-between p-2 rounded-lg items-center"
           >
-            <div className="">{value ? value : placeholder}</div>
+            <div className="text-gray-500 text-base font-medium">
+              {value ? value : placeholder}
+            </div>
             <Image src={"/icons/down.svg"} width={20} height={20} />
           </div>
           {show && (
@@ -70,16 +85,6 @@ export const SelectBox = ({
           )}
         </div>
       </main>
-    </>
-  );
-};
-
-export const Tags = ({ item, removeItem }) => {
-  return (
-    <>
-      <div className="px-2 text-xs font-medium max-w-min rounded-full py-1 flex gap-1 border-2 text-rose-900 border-rose-900">
-        {item}
-      </div>
     </>
   );
 };
